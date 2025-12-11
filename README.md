@@ -173,7 +173,7 @@ make clean
 
 ```bash
 # Run comprehensive automated cache tests
-make run-cache-test
+run prior terminal server and client commands and, enter test messages and then close the server. THe server statistics with cache hit rate and cache size will display
 ```
 
 ### Test 6: Round-Robin Scheduling
@@ -212,6 +212,5 @@ make run-cache-test
 | Command | Description | Example |
 |---------|-------------|---------|
 | `/help` | Show available commands |
-| `/stats` | Request server statistics |
 | `/quit`| Disconnect from server |
 

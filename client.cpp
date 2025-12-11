@@ -95,70 +95,9 @@ void send_messages(int socket_fd, const std::string& user_id) {
         // Check for help command
         if (input == "/help") {
             std::cout << "\nAvailable commands:" << std::endl;
-            std::cout << "  /quit, /exit   - Disconnect from chat" << std::endl;
-            std::cout << "  /help          - Show this help message" << std::endl;
-            std::cout << "  /stats         - Request server statistics" << std::endl;
-            std::cout << "  /cachetest N   - Send N messages to test cache (e.g., /cachetest 20)" << std::endl;
+            std::cout << "  /quit, /exit - Disconnect from chat" << std::endl;
+            std::cout << "  /help        - Show this help message" << std::endl;
             std::cout << std::endl;
-            continue;
-        }
-        
-        // Check for stats command
-        if (input == "/stats") {
-            memset(&msg, 0, sizeof(msg));
-            msg.type = MSG_STATUS;
-            msg.set_sender(user_id);
-            msg.timestamp = time(nullptr);
-            
-            ssize_t sent = send(socket_fd, &msg, sizeof(Message), MSG_NOSIGNAL);
-            if (sent <= 0) {
-                std::cout << "\n[ERROR] Failed to send stats request" << std::endl;
-                client_running.store(false);
-                break;
-            }
-            std::cout << "Requesting statistics from server..." << std::endl;
-            continue;
-        }
-        
-        // Check for cache test command
-        if (input.substr(0, 11) == "/cachetest " || input == "/cachetest") {
-            int num_messages = 20;  // Default
-            
-            if (input.length() > 11) {
-                try {
-                    num_messages = std::stoi(input.substr(11));
-                    if (num_messages <= 0 || num_messages > 100) {
-                        std::cout << "[ERROR] Number of messages must be between 1 and 100" << std::endl;
-                        continue;
-                    }
-                } catch (const std::exception& e) {
-                    std::cout << "[ERROR] Invalid number format. Usage: /cachetest N" << std::endl;
-                    continue;
-                }
-            }
-            
-            std::cout << "Sending " << num_messages << " test messages to fill cache..." << std::endl;
-            
-            for (int i = 0; i < num_messages; i++) {
-                memset(&msg, 0, sizeof(msg));
-                msg.type = MSG_TEXT;
-                msg.set_sender(user_id);
-                
-                std::string test_msg = "Cache test message #" + std::to_string(i + 1);
-                msg.set_payload(test_msg);
-                msg.timestamp = time(nullptr);
-                
-                ssize_t sent = send(socket_fd, &msg, sizeof(Message), MSG_NOSIGNAL);
-                if (sent <= 0) {
-                    std::cout << "\n[ERROR] Failed to send test message " << (i + 1) << std::endl;
-                    break;
-                }
-                
-                // Small delay to avoid overwhelming the server
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            }
-            
-            std::cout << "Sent " << num_messages << " test messages. Use /stats to see cache statistics." << std::endl;
             continue;
         }
         

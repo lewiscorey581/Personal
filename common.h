@@ -11,7 +11,7 @@ constexpr int SERVER_PORT = 8080;
 constexpr int MAX_CLIENTS = 50;
 constexpr int THREAD_POOL_SIZE = 6;
 constexpr int BUFFER_SIZE = 4096;
-constexpr int CACHE_SIZE = 10;  // Reduced from 50 to make cache behavior more visible in testing
+constexpr int CACHE_SIZE = 10;
 constexpr int TIME_QUANTUM_MS = 100;
 constexpr int USERNAME_MAX_LEN = 63;  // 64 - 1 for null terminator
 

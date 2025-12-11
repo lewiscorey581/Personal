@@ -1,6 +1,5 @@
 #ifndef CACHE_H
 #define CACHE_H
-
 #include "common.h"
 #include <vector>
 #include <mutex>
@@ -8,18 +7,14 @@
 #include <unordered_map>
 #include <string>
 
-/**
- * Thread-safe LRU message cache implementation
- * Uses shared_mutex for reader-writer locking to optimize concurrent reads
- */
 class MessageCache {
 private:
     std::vector<CacheEntry> cache;
     int capacity;
-    int head;  // Not currently used but kept for future circular buffer implementation
+    int head;
     int tail;  // Not currently used but kept for future circular buffer implementation
     int size;
-    std::unordered_map<std::string, int> index_map;  // Changed to unordered_map for O(1) lookup
+    std::unordered_map<std::string, int> index_map; 
     mutable std::shared_mutex cache_mutex;
     
     uint64_t hits;
@@ -33,7 +28,7 @@ public:
     explicit MessageCache(int capacity = CACHE_SIZE);
     ~MessageCache();
     
-    // Delete copy constructor and assignment operator (cache should not be copied)
+    // Delete copy constructor and assignment operator
     MessageCache(const MessageCache&) = delete;
     MessageCache& operator=(const MessageCache&) = delete;
     
@@ -52,7 +47,7 @@ public:
     int get_size() const;
     int get_capacity() const { return capacity; }
     
-    // Clear cache (useful for testing)
+    // Clear cache
     void clear();
 };
 

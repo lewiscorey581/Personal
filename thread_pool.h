@@ -49,4 +49,4 @@ public:
     size_t get_queue_size() const;
 };
 
-#endif // THREAD_POOL_H
+#endif

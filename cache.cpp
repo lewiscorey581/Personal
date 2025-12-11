@@ -88,7 +88,6 @@ bool MessageCache::lookup(const std::string& message_id, std::string& content) c
         int index = it->second;
         if (index >= 0 && index < size && cache[index].valid) {
             content = cache[index].content;
-            // Note: We can't modify hits here due to const, but update_access should be called separately
             const_cast<MessageCache*>(this)->hits++;
             return true;
         }

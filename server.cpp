@@ -245,49 +245,6 @@ void handle_client(int client_socket) {
                     }
                     break;
                 }
-                
-                case MSG_STATUS: {
-                    // Handle status request - send stats back to client
-                    update_metrics();
-                    
-                    // Create a stats message to send back
-                    Message stats_msg;
-                    memset(&stats_msg, 0, sizeof(stats_msg));
-                    stats_msg.type = MSG_TEXT;
-                    stats_msg.timestamp = time(nullptr);
-                    stats_msg.set_sender("SERVER");
-                    
-                    // Format statistics
-                    std::stringstream stats_stream;
-                    {
-                        std::lock_guard<std::mutex> lock(metrics_mutex);
-                        stats_stream << "\n=== SERVER STATISTICS ===\n"
-                                   << "Messages Sent:     " << metrics.messages_sent << "\n"
-                                   << "Messages Received: " << metrics.messages_received << "\n"
-                                   << "Active Clients:    " << metrics.active_clients << "\n"
-                                   << "Cache Hits:        " << metrics.cache_hits << "\n"
-                                   << "Cache Misses:      " << metrics.cache_misses << "\n"
-                                   << "Cache Hit Rate:    " << std::fixed << std::setprecision(2)
-                                   << message_cache.get_hit_rate() << "%\n"
-                                   << "Cache Size:        " << message_cache.get_size() << "/" 
-                                   << message_cache.get_capacity() << "\n"
-                                   << "=========================";
-                    }
-                    
-                    stats_msg.set_payload(stats_stream.str());
-                    
-                    // Send stats to requesting client only
-                    ssize_t sent = send(client_socket, &stats_msg, sizeof(Message), MSG_NOSIGNAL);
-                    if (sent > 0) {
-                        log_message("Statistics sent to " + user_id + " (" + std::to_string(sent) + " bytes)");
-                    } else {
-                        log_message("ERROR: Failed to send statistics to " + user_id);
-                    }
-                    
-                    // Also print to server console
-                    print_statistics();
-                    break;
-                }
                     
                 default:
                     log_message("Unknown message type " + std::to_string(msg.type) + 
@@ -331,9 +288,7 @@ void handle_client(int client_socket) {
 void print_statistics() {
     std::lock_guard<std::mutex> lock(metrics_mutex);
     
-    std::cout << "\n==================================" << std::endl;
     std::cout << "    SERVER STATISTICS" << std::endl;
-    std::cout << "==================================" << std::endl;
     std::cout << "Messages Sent:     " << metrics.messages_sent << std::endl;
     std::cout << "Messages Received: " << metrics.messages_received << std::endl;
     std::cout << "Active Clients:    " << metrics.active_clients << std::endl;
@@ -343,7 +298,6 @@ void print_statistics() {
               << message_cache.get_hit_rate() << "%" << std::endl;
     std::cout << "Cache Size:        " << message_cache.get_size() << "/" 
               << message_cache.get_capacity() << std::endl;
-    std::cout << "==================================" << std::endl;
 }
 
 void signal_handler(int signum) {
@@ -449,7 +403,6 @@ int main() {
         std::cerr << "Warning: Could not open log file" << std::endl;
     }
     
-    log_message("========================================");
     log_message("Server starting...");
     
     try {

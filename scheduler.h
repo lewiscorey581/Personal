@@ -6,9 +6,6 @@
 #include <mutex>
 #include <memory>
 
-/**
- * Node in the round-robin scheduling circular linked list
- */
 struct ScheduledClient {
     int socket_fd;
     std::string user_id;
